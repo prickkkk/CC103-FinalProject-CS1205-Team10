@@ -5,7 +5,7 @@ using namespace std;
 
 int main(){
 
-    cout << "rosceth" << endl;
+    cout << "Cyv" << endl;
 
 
     return 0;
