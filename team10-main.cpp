@@ -5,7 +5,7 @@ using namespace std;
 
 int main(){
 
-    cout << "Order of tres" << endl;
+    cout << "rosceth" << endl;
 
 
     return 0;
