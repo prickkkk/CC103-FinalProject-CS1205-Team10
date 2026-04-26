@@ -1,0 +1,11 @@
+# compiled files
+*.exe
+
+# VS Code settings
+.vscode/
+
+# build output
+build/
+bin/
+
+cmake-build-debug/
