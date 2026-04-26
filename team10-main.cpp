@@ -1,5 +1,6 @@
 #include <iostream>
 #include<iomanip>
+#include <string>
 using namespace std;
 
 class Customer {
@@ -58,7 +59,7 @@ void pcOccupancy();
 
 
 int main(){
-
+        cout << "Rosceth Faltado";
 
     while (true){
         cout << "<----MAIN MENU---->" << endl;
@@ -137,7 +138,7 @@ void addCustomer(){
     int hour;
     cout << "\nInput details" << endl;
     cout << "Name: ";
-    getline(cin, name);
+    std::getline(cin, name);
     cout << "code: ";
     cin >> user_code;
     cout << "hour: ";
