@@ -227,6 +227,25 @@ void displayPC(){
 
 }
 void removeCustomer(){
+    pcOccupancy();
+    int code_to_remove;
+    cout << "Enter the user code to remove: ";
+    cin >> code_to_remove;
+    bool not_found = true;
+    for(int  i = 0; i  < PC_NUM; i++){
+        if(pc_unit[i] == code_to_remove){
+            pc_unit[i] = -1;
+            not_found = false;
+        }
+    }
+    if (not_found){
+        cout << ">> User code not found <<" << endl;
+    }
+    else{
+        cout << ">> User code #" << code_to_remove << " successfully removed <<" << endl;
+    }
+    cout << endl << endl;
+
 
 }
 void viewLogRecord(){
