@@ -58,7 +58,7 @@ void pcOccupancy();
 
 
 int main(){
-
+    cout  << "Cyv Ramos";
 
     while (true){
         cout << "<----MAIN MENU---->" << endl;
