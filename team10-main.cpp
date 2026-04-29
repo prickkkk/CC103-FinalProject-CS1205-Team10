@@ -1,5 +1,6 @@
 #include <iostream>
 #include<iomanip>
+#include <string>
 using namespace std;
 
 class Customer {
@@ -190,8 +191,61 @@ void addCustomer(){
 
 }
 void passResCustomer(){
+    int check = checkNumberUnits();
+    if (res_head == nullptr) {
+        cout << "Empty" << endl;
+        return;
+    }
+    char choice;
+    cout << "What do you want to do with " << res_head->code << endl;
+    cout << "[o] assign to a pc [x] remove: ";
+    cin >> choice;
+    ReserveNode* temp = res_head;
+    string reserved_code = res_head->code;
+    res_head = res_head->next;
+    delete temp;
+    if (choice == 'o') {
+        if( check != -1){
+            cout << reserved_code << " has been deleted to reservation line." << endl;
+            cout << "Now input your details." << endl;
+            pcOccupancy();
+            addCustomer();
+        }
+        else{
+            cout <<  "All units are occupied!" << endl;
+            return;
+        }
+    }
+    else if (choice == 'x') {
+        cout << "has been deleted to reservation line." << endl;
+    }
 
+    }
+
+void addResQueue(string res_code){
+    ReserveNode* newNode = new ReserveNode();
+    newNode->code = res_code;
+    newNode->next = nullptr;
+
+    if(res_head == nullptr){
+        res_head = newNode;
+    }
+    else{
+        ReserveNode* temp = res_head;
+        while(temp->next != nullptr){
+            temp = temp->next;
+        }
+        temp->next = newNode;
+    }
 }
+void displayResQueue() {
+
+    if (res_head == nullptr) {
+        cout << "Empty\n";
+        return;
+    }
+ReserveNode* temp = res_head;
+
 
 void addResQueue(string res_code){
     ReserveNode* newNode = new ReserveNode();
@@ -224,7 +278,17 @@ ReserveNode* temp = res_head;
     cout << "[end of queue]" << endl << endl;
 }
 void displayPC(){
-
+    pcOccupancy();
+    cout << "PC DETAILS:" << endl;
+    for (int i = 0; i < PC_NUM; i++) {
+        cout << "Desktop #" << (i + 1) << ": ";
+        if (pc_unit[i] == -1) {
+            cout << "Empty" << endl;
+        } else {
+            cout << "User code " << pc_unit[i] << endl;
+        }
+    }
+    cout << endl << endl;
 }
 void removeCustomer(){
     pcOccupancy();
@@ -249,7 +313,23 @@ void removeCustomer(){
 
 }
 void viewLogRecord(){
-
+    if (log_head == nullptr) {
+        cout << ">> No log records available <<" << endl << endl;
+        return;
+    }
+    
+    cout << "\n=====================LOG RECORDS=====================" << endl << endl;
+    LogNode* temp = log_head;
+    int record_num = 1;
+    
+    while (temp != nullptr) {
+        cout << "[Record " << record_num << "] ";
+        temp->data.display();
+        temp = temp->next;
+        record_num++;
+    }
+    
+    cout << "\n--------------------------------------------------" << endl << endl;
 }
 
 int checkNumberUnits(){
