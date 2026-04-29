@@ -244,32 +244,7 @@ void displayResQueue() {
         cout << "Empty\n";
         return;
     }
-ReserveNode* temp = res_head;
-
-
-void addResQueue(string res_code){
-    ReserveNode* newNode = new ReserveNode();
-    newNode->code = res_code;
-    newNode->next = nullptr;
-
-    if(res_head == nullptr){
-        res_head = newNode;
-    }
-    else{
-        ReserveNode* temp = res_head;
-        while(temp->next != nullptr){
-            temp = temp->next;
-        }
-        temp->next = newNode;
-    }
-}
-void displayResQueue() {
-
-    if (res_head == nullptr) {
-        cout << "Empty\n";
-        return;
-    }
-ReserveNode* temp = res_head;
+    ReserveNode* temp = res_head;
 
     while (temp != nullptr) {
         cout << "["<< temp->code << "] <- ";
