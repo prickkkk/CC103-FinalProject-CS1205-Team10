@@ -368,23 +368,26 @@ void removeCustomer(){
 
 }
 void viewLogRecord(){
-    if (log_head == nullptr) {
-        cout << ">> No log records available <<" << endl << endl;
+    static LogNode* current = log_head;
+    static int record_num = 1;
+    if (current == nullptr) {
+        if (record_num == 1) {
+            cout << ">> No log records available <<" << endl << endl;
+        } else {
+            cout << "\n--------------------------------------------------" << endl << endl;
+        }
+        current = log_head; // reset for next call
+        record_num = 1;
         return;
     }
-
-    cout << "\n=====================LOG RECORDS=====================" << endl << endl;
-    LogNode* temp = log_head;
-    int record_num = 1;
-
-    while (temp != nullptr) {
-        cout << "[Record " << record_num << "] ";
-        temp->data.display();
-        temp = temp->next;
-        record_num++;
+    if (record_num == 1) {
+        cout << "\n=====================LOG RECORDS=====================" << endl << endl;
     }
-
-    cout << "\n--------------------------------------------------" << endl << endl;
+    cout << "[Record " << record_num << "] ";
+    current->data.display();
+    current = current->next;
+    record_num++;
+    viewLogRecord();
 }
 
 int checkNumberUnits(){
