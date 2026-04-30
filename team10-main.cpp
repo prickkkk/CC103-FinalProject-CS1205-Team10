@@ -42,8 +42,16 @@ struct LogNode{
     LogNode* next;
 };
 
+struct TimeNode{
+    int code;
+    int hour;
+    int pc;
+    TimeNode* next;
+};
+
 ReserveNode* res_head = nullptr;
 LogNode* log_head = nullptr;
+TimeNode* time_priority_head = nullptr;
 const int PC_NUM = 4;
 int pc_unit[PC_NUM] = {-1,-1,-1,-1};
 
@@ -90,7 +98,7 @@ int main(){
                     cout << "[o]yes [x]no  : ";
                     cin >> menu_choice;
                     cout << "------------------" << endl;
-                   
+
                     if (menu_choice == 'o') {
                         pcOccupancy();
                         addCustomer();
@@ -103,7 +111,7 @@ int main(){
                     cout << "[o] yes [x]no: ";
                     cin >> menu_choice;
                     cout << "---------------" << endl;
-                    
+
 
                     if (menu_choice == 'o') {
                         string code;
@@ -168,10 +176,11 @@ void addCustomer(){
         cout << "Unit number: ";
         cin >> pc_num;
     }
+    pc_unit[pc_num - 1] = user_code;
     Customer c(user_code, name, hour, pc_num);
 
     LogNode* newNode = new LogNode{c, nullptr};
-    
+
 
     if (log_head == nullptr) {
         log_head = newNode;
@@ -184,9 +193,28 @@ void addCustomer(){
         temp->next = newNode;
     }
 
+    TimeNode* newTimeNode = new TimeNode();
+    newTimeNode->code = user_code;
+    newTimeNode->hour = hour;
+    newTimeNode->pc = pc_num;
+    newTimeNode->next = nullptr;
+
+    if(time_priority_head == nullptr || hour <=  time_priority_head->hour){
+        newTimeNode->next = time_priority_head;
+        time_priority_head = newTimeNode;
+        return;
+    }
+    else {
+        TimeNode* temp = time_priority_head;
+        while (temp->next != nullptr && temp->next->hour <= hour) {
+            temp = temp->next;
+        }
+        newTimeNode->next = temp->next;
+        temp->next = newTimeNode;
+    }
 
     cout << endl;
-    pc_unit[pc_num - 1] = user_code;
+
     cout << ">> User " << user_code << " has been successfully assigned to desktop #" << pc_num << " <<" << endl << endl;
 
 }
@@ -244,7 +272,7 @@ void displayResQueue() {
         cout << "Empty\n";
         return;
     }
-ReserveNode* temp = res_head;
+    ReserveNode* temp = res_head;
 
     while (temp != nullptr) {
         cout << "["<< temp->code << "] <- ";
@@ -253,17 +281,16 @@ ReserveNode* temp = res_head;
     cout << "[end of queue]" << endl << endl;
 }
 void displayPC(){
-    pcOccupancy();
-    cout << "PC DETAILS:" << endl;
-    for (int i = 0; i < PC_NUM; i++) {
-        cout << "Desktop #" << (i + 1) << ": ";
-        if (pc_unit[i] == -1) {
-            cout << "Empty" << endl;
-        } else {
-            cout << "User code " << pc_unit[i] << endl;
-        }
+    if (time_priority_head == nullptr) {
+        cout << "All desktop units are empty" << endl;
     }
-    cout << endl << endl;
+    TimeNode* temp = time_priority_head;
+    while (temp != nullptr){
+        cout << "| ";
+        cout << "[" << temp->pc << "]" << " " << temp->code << " - " << temp->hour << " hrs | <- ";
+        temp = temp->next;
+    }
+    cout << "[end of queue]" << endl << endl;
 }
 void removeCustomer(){
     pcOccupancy();
@@ -280,7 +307,21 @@ void removeCustomer(){
     if (not_found){
         cout << ">> User code not found <<" << endl;
     }
-    else{
+    else {
+        TimeNode* temp = time_priority_head;
+        if (temp->code == code_to_remove) {
+            time_priority_head = temp->next;
+            delete temp;
+        }
+        else{
+            while (temp->next->code != code_to_remove) {
+                temp = temp->next;
+            }
+            TimeNode* toDelete = temp->next;
+            temp->next = toDelete->next;
+            delete toDelete;
+
+        }
         cout << ">> User code #" << code_to_remove << " successfully removed <<" << endl;
     }
     cout << endl << endl;
@@ -292,18 +333,18 @@ void viewLogRecord(){
         cout << ">> No log records available <<" << endl << endl;
         return;
     }
-    
+
     cout << "\n=====================LOG RECORDS=====================" << endl << endl;
     LogNode* temp = log_head;
     int record_num = 1;
-    
+
     while (temp != nullptr) {
         cout << "[Record " << record_num << "] ";
         temp->data.display();
         temp = temp->next;
         record_num++;
     }
-    
+
     cout << "\n--------------------------------------------------" << endl << endl;
 }
 
