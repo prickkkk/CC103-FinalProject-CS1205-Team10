@@ -54,11 +54,12 @@ LogNode* log_head = nullptr;
 TimeNode* time_priority_head = nullptr;
 const int PC_NUM = 4;
 int pc_unit[PC_NUM] = {-1,-1,-1,-1};
+int user_code = 100;
 
 void addCustomer(); //noah
 void passResCustomer(); //rosceth
 void displayResQueue(); // cyv
-void displayPC();// noah
+void displayPcTime();// noah
 void removeCustomer(); //cyv
 void viewLogRecord(); //rosceth
 void addResQueue(string res_code);
@@ -70,6 +71,7 @@ void pcOccupancy();
 int main(){
 
     while (true){
+        cout << endl;
         cout << "=============== MAIN MENU ===============" << endl;
         cout << "[1] add customer" << endl;
         cout << "[2] add customer from reservation queue" << endl;
@@ -133,7 +135,8 @@ int main(){
                 break;
             }
             case '4':{
-                displayPC();
+                pcOccupancy();
+                displayPcTime();
                 break;
             }
             case '5': {
@@ -159,23 +162,22 @@ void addCustomer(){
     cin.ignore();
     string name;
     int pc_num;
-    int user_code;
     int hour;
     cout << "\n<--INPUT DETAILS-->" << endl;
     cout << left << setw(12) << "Name" << ":";
     getline(cin, name);
-    cout << left << setw(12) << "code"<< ":";
-    cin >> user_code;
-    cout << left << setw(12) << "hour" << ":";
+    cout << left << setw(12) << "time" << ":";
     cin >> hour;
-    cout << left << setw(12) << "Unit number" << ":";
+    cout << left << setw(12) << "unit number" << ":";
     cin >> pc_num;
-
     while (pc_unit[pc_num-1] != -1) {
         cout << "Unit occupied, please try again" << endl;
         cout << "Unit number: ";
         cin >> pc_num;
     }
+    cout << "code: " << user_code + 1 << endl;
+    user_code++;
+
     pc_unit[pc_num - 1] = user_code;
     Customer c(user_code, name, hour, pc_num);
 
@@ -202,7 +204,7 @@ void addCustomer(){
     if(time_priority_head == nullptr || hour <=  time_priority_head->hour){
         newTimeNode->next = time_priority_head;
         time_priority_head = newTimeNode;
-        return;
+
     }
     else {
         TimeNode* temp = time_priority_head;
@@ -215,26 +217,28 @@ void addCustomer(){
 
     cout << endl;
 
-    cout << ">> User " << user_code << " has been successfully assigned to desktop #" << pc_num << " <<" << endl << endl;
+    cout << ">> Customer " << user_code << " has been successfully assigned to desktop #" << pc_num << " <<" << endl << endl;
 
 }
 void passResCustomer(){
     int check = checkNumberUnits();
     if (res_head == nullptr) {
-        cout << "Empty" << endl;
+        cout << ">> Reservation queue is empty <<" << endl;
         return;
     }
     char choice;
     cout << "What do you want to do with " << res_head->code << endl;
     cout << "[o] assign to a pc [x] remove: ";
     cin >> choice;
-    ReserveNode* temp = res_head;
-    string reserved_code = res_head->code;
-    res_head = res_head->next;
-    delete temp;
+
+
     if (choice == 'o') {
         if( check != -1){
-            cout << reserved_code << " has been deleted to reservation line." << endl;
+            ReserveNode* temp = res_head;
+            string reserved_code = res_head->code;
+            res_head = res_head->next;
+            delete temp;
+            cout << ">> " << reserved_code << " has been removed from reservation line <<" << endl;
             cout << "Now input your details." << endl;
             pcOccupancy();
             addCustomer();
@@ -245,7 +249,14 @@ void passResCustomer(){
         }
     }
     else if (choice == 'x') {
-        cout << "has been deleted to reservation line." << endl;
+        ReserveNode* temp = res_head;
+        string reserved_code = res_head->code;
+        res_head = res_head->next;
+        delete temp;
+        cout << ">> " << reserved_code << " has been deleted to reservation line <<" << endl;
+    }
+    else {
+        cout << "Invalid Input!" << endl;
     }
 
     }
@@ -269,7 +280,7 @@ void addResQueue(string res_code){
 void displayResQueue() {
 
     if (res_head == nullptr) {
-        cout << "Empty\n";
+        cout << "Reservation queue is empty\n";
         return;
     }
     ReserveNode* temp = res_head;
@@ -280,7 +291,8 @@ void displayResQueue() {
     }
     cout << "[end of queue]" << endl << endl;
 }
-void displayPC(){
+void displayPcTime(){
+    cout << "<--Sorted base on remaining time-->" << endl;
     if (time_priority_head == nullptr) {
         cout << "All desktop units are empty" << endl;
     }
@@ -293,39 +305,66 @@ void displayPC(){
     cout << "[end of queue]" << endl << endl;
 }
 void removeCustomer(){
-    pcOccupancy();
-    int code_to_remove;
-    cout << "Enter the user code to remove: ";
-    cin >> code_to_remove;
-    bool not_found = true;
-    for(int  i = 0; i  < PC_NUM; i++){
-        if(pc_unit[i] == code_to_remove){
-            pc_unit[i] = -1;
-            not_found = false;
+    char choice;
+    cout << "[1]Remove a specific customer  [2]Remove a customer that runs out of time" << endl;
+    cout << "Enter choice: ";
+    cin >> choice;
+
+    if (choice == '1') {
+        pcOccupancy();
+        int code_to_remove;
+        cout << "Enter the user code to remove: ";
+        cin >> code_to_remove;
+        bool not_found = true;
+        for(int  i = 0; i  < PC_NUM; i++){
+            if(pc_unit[i] == code_to_remove){
+                pc_unit[i] = -1;
+                not_found = false;
+            }
         }
+        if (not_found){
+            cout << ">> User code not found <<" << endl;
+        }
+        else {
+            TimeNode* temp = time_priority_head;
+            if (temp->code == code_to_remove) {
+                time_priority_head = temp->next;
+                delete temp;
+            }
+            else{
+                while (temp->next->code != code_to_remove) {
+                    temp = temp->next;
+                }
+                TimeNode* toDelete = temp->next;
+                temp->next = toDelete->next;
+                delete toDelete;
+
+            }
+            cout << ">> User code #" << code_to_remove << " successfully removed <<" << endl;
+        }
+        cout << endl << endl;
     }
-    if (not_found){
-        cout << ">> User code not found <<" << endl;
-    }
-    else {
-        TimeNode* temp = time_priority_head;
-        if (temp->code == code_to_remove) {
+    else if (choice == '2') {
+        displayPcTime();
+        cout << "Do you want to remove customer " << time_priority_head->code << " with " << time_priority_head->hour << " remaining hour/hours?: " << endl;
+        cout << "[o]yes [x]no: ";
+        cin >> choice;
+        if (choice == 'o') {
+            TimeNode* temp = time_priority_head;
             time_priority_head = temp->next;
             delete temp;
-        }
-        else{
-            while (temp->next->code != code_to_remove) {
-                temp = temp->next;
+
+            for (int i = 0; i < PC_NUM; i++) {
+                if (pc_unit[i] == time_priority_head->code) {
+                    pc_unit[i] = -1;
+                }
             }
-            TimeNode* toDelete = temp->next;
-            temp->next = toDelete->next;
-            delete toDelete;
-
+            cout << ">> User code #" << time_priority_head->code << " successfully removed <<" << endl;
         }
-        cout << ">> User code #" << code_to_remove << " successfully removed <<" << endl;
+        else {
+            return;
+        }
     }
-    cout << endl << endl;
-
 
 }
 void viewLogRecord(){
