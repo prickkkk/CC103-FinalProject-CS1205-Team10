@@ -175,7 +175,7 @@ void addCustomer(){
         cout << "Unit number: ";
         cin >> pc_num;
     }
-    cout << "code: " << user_code + 1 << endl;
+    cout << left << setw(12) << "code" << ":" << user_code + 1 << endl;
     user_code++;
 
     pc_unit[pc_num - 1] = user_code;
@@ -223,7 +223,8 @@ void addCustomer(){
 void passResCustomer(){
     int check = checkNumberUnits();
     if (res_head == nullptr) {
-        cout << ">> Reservation queue is empty <<" << endl;
+        cout << "Reservation queue is empty!" << endl;
+        cout << "There's no customer to get" << endl;
         return;
     }
     char choice;
@@ -280,7 +281,7 @@ void addResQueue(string res_code){
 void displayResQueue() {
 
     if (res_head == nullptr) {
-        cout << "Reservation queue is empty\n";
+        cout << "Reservation queue is empty!\n";
         return;
     }
     ReserveNode* temp = res_head;
